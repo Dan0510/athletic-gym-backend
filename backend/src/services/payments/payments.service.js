@@ -388,9 +388,9 @@ for (const m of members) {
             `, [filePath, id_payment]);
 
             // 📧 enviar correo
-            if (emails.length) {
+            /*if (emails.length) {
                 await sendReceiptEmail(emails, pdfBuffer, payment_folio);
-            }
+            }*/
         }
 
         return {
@@ -679,9 +679,9 @@ exports.cancelPayment = async (req) => {
         // 📧 ENVIAR CORREO
         const emails = members.map(m => m.email).filter(e => e);
 
-        if (emails.length) {
+        /*if (emails.length) {
             await sendReceiptEmail(emails, pdfBuffer, payment.payment_folio + ' CANCELADO');
-        }
+        }*/
 
         return {
             success: true,
@@ -990,9 +990,9 @@ exports.updatePayment = async (req) => {
                 WHERE id_payment = ?
             `, [filePath, id_payment]);
 
-            if (emails.length) {
+            /*if (emails.length) {
                 await sendReceiptEmail(emails, pdfBuffer, payment_folio);
-            }
+            }*/
         }
 
         await conn.commit();

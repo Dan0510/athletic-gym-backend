@@ -6,7 +6,7 @@ let isInitialized = false;
 async function initMailer() {
     if (isInitialized) return;
 
-    const SENDGRID_API_KEY = await getSecret('SENDGRID_API_KEY-alfapower-gym');
+    const SENDGRID_API_KEY = await getSecret('SENDGRID_API_KEY-athletic-gym');
 
     sgMail.setApiKey(SENDGRID_API_KEY);
 

@@ -28,7 +28,7 @@ exports.login = async (req) => {
         throw new Error("Incorrect password");
     }
 
-    const JWT_SECRET = await getSecret('JWT_SECRET-alfapower-gym');
+    const JWT_SECRET = await getSecret('JWT_SECRET-athletic-gym');
 
     const token = jwt.sign(
         { id_user: user.id_user, username: user.username },

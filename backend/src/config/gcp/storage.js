@@ -8,7 +8,7 @@ let bucketInstance = null;
 async function getBucket() {
     if (bucketInstance) return bucketInstance;
 
-    const bucketName = await getSecret('GCP_BUCKET_NAME-alfapower-gym');
+    const bucketName = await getSecret('GCP_BUCKET_NAME-athletic-gym');
 
     bucketInstance = storage.bucket(bucketName);
 

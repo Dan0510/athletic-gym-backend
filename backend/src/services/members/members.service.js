@@ -134,10 +134,10 @@ exports.createMember = async (req) => {
             });
 
             // 2. Inicializar mailer (ideal moverlo fuera del request)
-            await initMailer();
+            //await initMailer();
 
             // 3. Enviar correo
-            await sgMail.send({
+            /*await sgMail.send({
                 to: email,
                 from: 'AlfaPower Gym <contacto@alfapowergym.com>',
                 subject: 'Tu código de acceso',
@@ -147,7 +147,7 @@ exports.createMember = async (req) => {
                     <p>Presenta este QR para acceder:</p>
                     <img src="${url}" width="200"/>
                 `
-            });
+            });*/
 
         } catch (err) {
             console.error("Error enviando correo:", err.response?.body || err.message);
@@ -365,7 +365,7 @@ exports.migrateMemberPhotos = async () => {
                     metadata: { contentType }
                 });
 
-                const publicUrl = `https://storage.googleapis.com/alfapower-gym/${fileName}`;
+                const publicUrl = `https://storage.googleapis.com/athletic-gym/${fileName}`;
 
                 // =========================
                 // 💾 UPDATE BD

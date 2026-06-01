@@ -9,7 +9,7 @@ const clientPools = new Map();
 async function getConnectionDB () {
   if (pool) return pool;
 
-  const secrets = await getSecret("alfapower-gym", {
+  const secrets = await getSecret("athletic-gym", {
   parse: true
 });
 

@@ -31,7 +31,7 @@ exports.generateReceiptPdf = async (data) => {
         // ===============================
         try {
             const logo = await getLogoBuffer(
-                'https://storage.googleapis.com/alfapower-gym/logo_alfapower_transparent.png'
+                'https://storage.googleapis.com/athletic-gym/logo_athletic_transparente.png'
             );
 
             doc.image(logo, 40, 40, { width: 90 });

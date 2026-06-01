@@ -7,9 +7,8 @@ const corsOptions = {
   origin: function (origin, callback) {
     const allowedOrigins = [
       'http://localhost:8080',
-      'https://alfapowergym.com',
-      'https://admin.alfapowergym.com',
-      'https://service-alfapower-gym-frontend-182411964865.us-central1.run.app',
+      'https://berenicecalderon.com.mx',
+      'https://admin.berenicecalderon.com.mx',
       'https://service-athletic-gym-frontend-182411964865.us-central1.run.app'
     ];
     if (!origin || allowedOrigins.includes(origin)) {

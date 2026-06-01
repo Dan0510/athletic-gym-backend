@@ -109,7 +109,7 @@ exports.getAll = async (db, id_gym_branch) => {
             CONCAT(tb_members.first_name, ' ', tb_members.first_surname, ' ', IFNULL(tb_members.second_surname, '')) AS full_name,
             tb_members.email,
             tb_members.telephone,
-            CONCAT('https://storage.googleapis.com/alfapower-gym/', tb_members.photo_path) AS photo_url,
+            CONCAT('https://storage.googleapis.com/athletic-gym/', tb_members.photo_path) AS photo_url,
             DATE_FORMAT(next_payment_date, '%d-%m-%Y') AS next_payment_date,
             tb_members.status,
             z_users.name AS created_by

@@ -96,7 +96,7 @@ exports.getAll = async (db, id_gym_branch) => {
             is_admin,
             created_at
         FROM z_users
-        WHERE id_gym_branch = ?
+        WHERE id_gym_branch = ? AND status != 2
         ORDER BY created_at DESC
     `, [id_gym_branch]);
 

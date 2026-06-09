@@ -52,7 +52,7 @@ exports.searchMember = async ({ search, id_gym_branch }) => {
                     next_payment_date,
                      CASE 
                     WHEN photo_path IS NOT NULL AND photo_path <> '' THEN 
-                        CONCAT('https://storage.googleapis.com/alfapower-gym/', photo_path)
+                        CONCAT('https://storage.googleapis.com/athletic-gym/', photo_path)
                     ELSE NULL
                 END AS photo_url
                 FROM tb_members
@@ -101,7 +101,7 @@ exports.validateQrAccess = async ({ id_member, id_gym_branch }) => {
                 next_payment_date,
                  CASE 
                     WHEN photo_path IS NOT NULL AND photo_path <> '' THEN 
-                        CONCAT('https://storage.googleapis.com/alfapower-gym/', photo_path)
+                        CONCAT('https://storage.googleapis.com/athletic-gym/', photo_path)
                     ELSE NULL
                 END AS photo_url,
                 status
@@ -270,7 +270,7 @@ exports.registerAccess = async (data) => {
 
 
         const photo_url = member.photo_path
-            ? `https://storage.googleapis.com/alfapower-gym/${member.photo_path}`
+            ? `https://storage.googleapis.com/athletic-gym/${member.photo_path}`
             : null;
         
 

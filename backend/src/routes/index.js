@@ -12,5 +12,8 @@ router.use('/users', require('./users/users.routes'));
 router.use('/access', require('./access/access.routes'));
 router.use('/reviews', require('./reviews/reviews.routes'));
 router.use('/preregistration', require('./preregistration/preregistration.routes'));
+router.use('/visits', require('./visits/visits.routes'));
+
+router.use('/suppliers', require('./suppliers/suppliers.routes'));
 
 module.exports = router;

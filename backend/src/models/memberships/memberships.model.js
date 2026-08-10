@@ -35,9 +35,16 @@ exports.getAvailable = async (db, data) => {
         data.today
     ];
 
-     if (data.only_new_members !== undefined) {
+    /*if (data.only_new_members !== undefined) {
         query += ` AND only_new_members = ? `;
         params.push(Number(data.only_new_members));
+    }*/
+
+    if (data.only_new_members !== undefined) {
+        query += ` AND (only_new_members = ?  OR only_new_members=2) `;
+        params.push(Number(data.only_new_members));
+    }else{
+         query += ` only_new_members IN (0,2)`;
     }
 
     query += ` ORDER BY m.id_membership ASC`;

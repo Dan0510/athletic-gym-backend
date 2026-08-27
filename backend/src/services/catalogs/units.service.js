@@ -15,6 +15,6 @@ exports.getUnits = async () => {
 };
 
  exports.getUnitsAvailable = async() => {
-
-    return await UnitsModel.getUnitsAvailable();
+    const db = await getConnectionDB();
+    return await UnitsModel.getUnitsAvailable(db);
 };

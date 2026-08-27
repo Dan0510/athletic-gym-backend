@@ -2,101 +2,106 @@ const BrandModel = require("../../models/brands/brands.model");
 
 class BrandService {
 
-    async createCategory(data) {
+    async getAllBrands() {
+
+        return await BrandModel.getAllBrands();
+    }
+
+    async getBrand(id) {
+
+        const brand = await BrandModel.getBrand(id);
+
+        if (!brand) {
+            const error = new Error("La marca no existe.");
+            error.statusCode = 404;
+            throw error;
+        }
+
+        return brand;
+    }
+
+    async getBrandsAvailable() {
+
+        return await BrandModel.getBrandsAvailable();
+    }
+
+    async getBrandsAvailableByCategory(id) {
+
+        return await BrandModel.getBrandsAvailableByCategory(id);
+    }
+
+    async createBrand(data) {
 
         if (!data.name || data.name.trim() === "") {
-            const error = new Error("El nombre de la categoría es obligatorio.");
+            const error = new Error("El nombre de la marca es obligatorio.");
             error.statusCode = 400;
             throw error;
         }
 
-        const category = await CategoryModel.getCategoryByName(data.name);
+        const brand = await BrandModel.getBrandByName(data.name);
 
-        if (category) {
-            const error = new Error("La categoría ya existe.");
+        if (brand) {
+            const error = new Error("La marca ya existe.");
             error.statusCode = 409;
             throw error;
         }
 
-        return await CategoryModel.createCategory(data);
+        return await BrandModel.createBrand(data);
     }
 
-    async updateCategory(id, data) {
+    async updateBrand(id, data) {
 
-        const category = await CategoryModel.getCategory(id);
+        const brand = await BrandModel.getBrand(id);
 
-        if (!category) {
-            const error = new Error("La categoría no existe.");
+        if (!brand) {
+            const error = new Error("La marca no existe.");
             error.statusCode = 404;
             throw error;
         }
 
         if (!data.name || data.name.trim() === "") {
-            const error = new Error("El nombre de la categoría es obligatorio.");
+            const error = new Error("El nombre de la marca es obligatorio.");
             error.statusCode = 400;
             throw error;
         }
 
-        const exists = await CategoryModel.getCategoryByName(data.name);
+        const exists = await BrandModel.getBrandByName(data.name);
 
-        if (exists && exists.id_category != id) {
-            const error = new Error("Ya existe otra categoría con ese nombre.");
+        if (exists && exists.id_brand != id) {
+            const error = new Error("Ya existe otra marca con ese nombre.");
             error.statusCode = 409;
             throw error;
         }
 
-        return await CategoryModel.updateCategory(id, data);
+        return await BrandModel.updateBrand(id, data);
     }
 
-    async deleteCategory(id) {
+    async deleteBrand(id) {
 
-        const category = await CategoryModel.getCategory(id);
+        const brand = await BrandModel.getBrand(id);
 
-        if (!category) {
-            const error = new Error("La categoría no existe.");
+        if (!brand) {
+            const error = new Error("La marca no existe.");
             error.statusCode = 404;
             throw error;
         }
 
-        return await CategoryModel.deleteCategory(id);
-    }
-
-    async getCategory(id) {
-
-        const category = await CategoryModel.getCategory(id);
-
-        if (!category) {
-            const error = new Error("La categoría no existe.");
-            error.statusCode = 404;
-            throw error;
-        }
-
-        return category;
-    }
-
-    async getAllCategories() {
-
-        return await CategoryModel.getAllCategories();
-    }
-
-    async getCategoriesAvailable() {
-
-        return await CategoryModel.getCategoriesAvailable();
+        return await BrandModel.deleteBrand(id);
     }
 
     async setStatus(id, status) {
 
-        const category = await CategoryModel.getCategory(id);
+        const brand = await BrandModel.getBrand(id);
 
-        if (!category) {
-            const error = new Error("La categoría no existe.");
+        if (!brand) {
+            const error = new Error("La marca no existe.");
             error.statusCode = 404;
             throw error;
         }
 
-        return await CategoryModel.setStatus(id, status);
+        return await BrandModel.setStatus(id, status);
     }
 
 }
 
-module.exports = new CategoryService();
+module.exports = new BrandService();

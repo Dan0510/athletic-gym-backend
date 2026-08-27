@@ -15,5 +15,7 @@ router.use('/preregistration', require('./preregistration/preregistration.routes
 router.use('/visits', require('./visits/visits.routes'));
 
 router.use('/suppliers', require('./suppliers/suppliers.routes'));
+router.use('/products', require('./products/products.routes'));
+
 
 module.exports = router;

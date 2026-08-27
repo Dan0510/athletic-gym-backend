@@ -13,3 +13,8 @@ exports.getUnits = async () => {
         data: units
     };
 };
+
+ exports.getUnitsAvailable = async() => {
+
+    return await UnitsModel.getUnitsAvailable();
+};

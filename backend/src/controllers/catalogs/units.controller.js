@@ -11,3 +11,23 @@ exports.getUnits = async (req, res) => {
         });
     }
 };
+
+exports.getUnitsAvailable  = async (req, res) => {
+        try {
+
+            const units = await UnitsService.getUnitsAvailable();
+
+            return res.status(200).json({
+                success: true,
+                data: units
+            });
+
+        } catch (error) {
+            console.error("getUnitsAvailable:", error);
+
+            return res.status(500).json({
+                success: false,
+                message: error.message
+            });
+        }
+};

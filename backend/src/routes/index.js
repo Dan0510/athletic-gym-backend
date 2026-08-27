@@ -20,6 +20,7 @@ router.use('/brands', require('./brands/brands.routes'));
 router.use('/flavors', require('./flavors/flavors.routes'));
 router.use('/products', require('./products/products.routes'));
 router.use('/presentations', require('./presentations/presentations.routes'));
+router.use('/units', require('./catalogs/units.routes'));
 
 
 module.exports = router;

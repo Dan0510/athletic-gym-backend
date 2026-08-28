@@ -2,6 +2,8 @@ const PresentationModel = require(
     '../../models/presentations/presentations.model'
 );
 
+const { v4: uuidv4 } =
+    require("uuid");
 
 class PresentationService {
 
@@ -9,67 +11,44 @@ class PresentationService {
     async createPresentation(data) {
 
         if (!data.id_product) {
-
             const error = new Error(
-                'El producto es obligatorio.'
+                "El producto es obligatorio."
             );
-
             error.statusCode = 400;
             throw error;
         }
-
 
         if (!data.id_unit) {
-
             const error = new Error(
-                'La unidad es obligatoria.'
+                "La unidad es obligatoria."
             );
-
             error.statusCode = 400;
             throw error;
         }
-
 
         if (
             data.quantity === undefined ||
             data.quantity === null ||
             Number(data.quantity) <= 0
         ) {
-
             const error = new Error(
-                'La cantidad debe ser mayor a cero.'
+                "La cantidad debe ser mayor a cero."
             );
-
             error.statusCode = 400;
             throw error;
         }
-
-
-        if (!data.sku || data.sku.trim() === '') {
-
-            const error = new Error(
-                'El SKU es obligatorio.'
-            );
-
-            error.statusCode = 400;
-            throw error;
-        }
-
 
         if (
             data.price === undefined ||
             data.price === null ||
             Number(data.price) < 0
         ) {
-
             const error = new Error(
-                'El precio no puede ser negativo.'
+                "El precio no puede ser negativo."
             );
-
             error.statusCode = 400;
             throw error;
         }
-
 
         const product =
             await PresentationModel.getProduct(
@@ -77,15 +56,12 @@ class PresentationService {
             );
 
         if (!product) {
-
             const error = new Error(
-                'El producto no existe.'
+                "El producto no existe."
             );
-
             error.statusCode = 404;
             throw error;
         }
-
 
         const unit =
             await PresentationModel.getUnit(
@@ -93,15 +69,12 @@ class PresentationService {
             );
 
         if (!unit) {
-
             const error = new Error(
-                'La unidad no existe.'
+                "La unidad no existe."
             );
-
             error.statusCode = 404;
             throw error;
         }
-
 
         if (data.id_flavor) {
 
@@ -111,33 +84,15 @@ class PresentationService {
                 );
 
             if (!flavor) {
-
                 const error = new Error(
-                    'El sabor no existe.'
+                    "El sabor no existe."
                 );
-
                 error.statusCode = 404;
                 throw error;
             }
         }
 
-
-        const sku =
-            await PresentationModel.getBySku(
-                data.sku
-            );
-
-        if (sku) {
-
-            const error = new Error(
-                'El SKU ya está registrado.'
-            );
-
-            error.statusCode = 409;
-            throw error;
-        }
-
-
+        // Validar código de barras
         if (data.barcode) {
 
             const barcode =
@@ -146,17 +101,15 @@ class PresentationService {
                 );
 
             if (barcode) {
-
                 const error = new Error(
-                    'El código de barras ya está registrado.'
+                    "El código de barras ya está registrado."
                 );
-
                 error.statusCode = 409;
                 throw error;
             }
         }
 
-
+        // Validar variante
         const variant =
             await PresentationModel.getProductVariant(
                 data.id_product,
@@ -165,21 +118,62 @@ class PresentationService {
                 data.id_unit
             );
 
-
         if (variant) {
 
             const error = new Error(
-                'Ya existe una presentación con el mismo producto, sabor, cantidad y unidad.'
+                "Ya existe una presentación con el mismo producto, sabor, cantidad y unidad."
             );
 
             error.statusCode = 409;
+
             throw error;
         }
 
+        // Imagen
+        if (data.file) {
 
-        return await PresentationModel.createPresentation(
-            data
-        );
+            if (!data.file.mimetype.startsWith("image/")) {
+
+                const error = new Error(
+                    "El archivo debe ser una imagen."
+                );
+
+                error.statusCode = 400;
+
+                throw error;
+            }
+
+            const bucket = await getBucket();
+
+            const extension =
+                data.file.mimetype === "image/png"
+                    ? "png"
+                    : "jpg";
+
+            const fileName =
+                `${uuidv4()}.${extension}`;
+
+            const imagePath =
+                `products/photos/${fileName}`;
+
+            const file =
+                bucket.file(imagePath);
+
+            await file.save(
+                data.file.buffer,
+                {
+                    metadata: {
+                        contentType:
+                            data.file.mimetype
+                    }
+                }
+            );
+
+            data.image_url = imagePath;
+        }
+
+        return await PresentationModel
+            .createPresentation(data);
     }
 
 
@@ -236,17 +230,6 @@ class PresentationService {
         }
 
 
-        if (!data.sku || data.sku.trim() === '') {
-
-            const error = new Error(
-                'El SKU es obligatorio.'
-            );
-
-            error.statusCode = 400;
-            throw error;
-        }
-
-
         if (
             data.price === undefined ||
             data.price === null ||
@@ -262,25 +245,9 @@ class PresentationService {
         }
 
 
-        const sku =
-            await PresentationModel.getBySku(
-                data.sku
-            );
-
-        if (
-            sku &&
-            Number(sku.id_presentation) !== Number(id)
-        ) {
-
-            const error = new Error(
-                'El SKU ya está registrado en otra presentación.'
-            );
-
-            error.statusCode = 409;
-            throw error;
-        }
-
-
+        /*
+        * Validar código de barras
+        */
         if (data.barcode) {
 
             const barcode =
@@ -303,6 +270,9 @@ class PresentationService {
         }
 
 
+        /*
+        * Validar variante
+        */
         const variant =
             await PresentationModel.getProductVariant(
                 data.id_product,
@@ -310,7 +280,6 @@ class PresentationService {
                 data.quantity,
                 data.id_unit
             );
-
 
         if (
             variant &&
@@ -326,10 +295,89 @@ class PresentationService {
         }
 
 
-        return await PresentationModel.updatePresentation(
-            id,
-            data
-        );
+        /*
+        * Mantener imagen actual
+        */
+
+        let oldImagePath = presentation.image_path || null;
+        let imagePath = oldImagePath;
+        /*
+        * Nueva imagen
+        */
+        if (data.file) {
+
+            if (!data.file.mimetype.startsWith('image/')) {
+
+                const error = new Error(
+                    'El archivo debe ser una imagen.'
+                );
+
+                error.statusCode = 400;
+
+                throw error;
+            }
+
+
+            const bucket = await getBucket();
+
+
+            const extension =
+                data.file.mimetype === 'image/png'
+                    ? 'png'
+                    : 'jpg';
+
+
+            const fileName =
+                `${uuidv4()}.${extension}`;
+
+
+            imagePath =
+                `products/photos/${fileName}`;
+
+
+            const file =
+                bucket.file(imagePath);
+
+
+            await file.save(
+                data.file.buffer,
+                {
+                    metadata: {
+                        contentType:
+                            data.file.mimetype
+                    }
+                }
+            );
+        }
+
+
+        data.image_path = imagePath;
+
+
+        // Actualizar BD
+        const result =
+            await PresentationModel.updatePresentation(
+                id,
+                data
+            );
+
+        // Eliminar imagen anterior
+        if (
+            oldImagePath &&
+            oldImagePath !== imagePath
+        ) {
+            const oldFile =
+                bucket.file(oldImagePath);
+
+            const [exists] =
+                await oldFile.exists();
+
+            if (exists) {
+                await oldFile.delete();
+            }
+        }
+
+        return result;
     }
 
 
@@ -443,6 +491,28 @@ class PresentationService {
         );
     }
 
+    
+}
+
+async function deleteFile(filePath) {
+
+    if (!filePath) {
+        return;
+    }
+
+    const bucket = await getBucket();
+
+    const file = bucket.file(filePath);
+
+    const [exists] = await file.exists();
+
+    if (!exists) {
+        return;
+    }
+
+    await file.delete();
+
+    console.log(`Archivo eliminado: ${filePath}`);
 }
 
 

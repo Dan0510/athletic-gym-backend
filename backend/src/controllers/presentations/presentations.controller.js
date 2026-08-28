@@ -6,34 +6,35 @@ const PresentationService = require(
 class PresentationController {
 
 
-    async createPresentation(req, res) {
+    async createPresentation(req, res, next) {
 
         try {
 
-            const result =
-                await PresentationService.createPresentation(
-                    req.body
-                );
+            const data = {
+                id_product: req.body.id_product,
+                id_flavor: req.body.id_flavor || null,
+                quantity: req.body.quantity,
+                id_unit: req.body.id_unit,
+                barcode: req.body.barcode || null,
+                price: req.body.price,
+                status: req.body.status ?? 1,
+                created_by: req.body.created_by || null,
+                file: req.file
+            };
+
+            const presentation =
+                await PresentationService.createPresentation(data);
 
             return res.status(201).json({
                 success: true,
                 message: 'Presentación creada correctamente.',
-                data: result
+                data: presentation
             });
 
         } catch (error) {
 
-            console.error(
-                'createPresentation:',
-                error
-            );
+            next(error);
 
-            return res.status(
-                error.statusCode || 500
-            ).json({
-                success: false,
-                message: error.message
-            });
         }
     }
 
@@ -44,10 +45,15 @@ class PresentationController {
 
             const { id } = req.params;
 
+            const data = {
+                ...req.body,
+                file: req.file
+            };
+
             const result =
                 await PresentationService.updatePresentation(
                     id,
-                    req.body
+                    data
                 );
 
             return res.status(200).json({

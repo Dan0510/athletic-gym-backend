@@ -5,40 +5,93 @@ const {
 
 class PresentationModel {
 
+    async generateSku(connection) {
+
+        const [rows] = await connection.execute(`
+            SELECT
+                current_number,
+                prefix,
+                digits
+            FROM cat_serial_control
+            WHERE code = 'SKU'
+            AND status = 1
+            FOR UPDATE
+        `);
+
+        if (rows.length === 0) {
+            throw new Error(
+                'No existe configuración para generar SKU.'
+            );
+        }
+
+        const serial = rows[0];
+
+        const nextNumber = serial.current_number + 1;
+
+        await connection.execute(`
+            UPDATE cat_serial_control
+            SET current_number = ?
+            WHERE code = 'SKU'
+        `, [nextNumber]);
+
+        const number = String(nextNumber)
+            .padStart(serial.digits, '0');
+
+        return `${serial.prefix}-${number}`;
+    }
 
     async createPresentation(data) {
 
         const pool = await getConnectionDB();
 
-        const [result] = await pool.execute(`
-            INSERT INTO cat_product_presentations
-            (
-                id_product,
-                id_flavor,
-                id_unit,
-                quantity,
-                sku,
-                barcode,
-                price,
-                image_url,
-                created_by
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `, [
-            data.id_product,
-            data.id_flavor || null,
-            data.id_unit,
-            data.quantity,
-            data.sku.trim(),
-            data.barcode || null,
-            data.price,
-            data.image_url || null,
-            data.created_by || null
-        ]);
+        const connection = await pool.getConnection();
 
-        return {
-            id_presentation: result.insertId
-        };
+        try {
+
+            await connection.beginTransaction();
+
+            const sku = await this.generateSku(pool);
+
+            const [result] = await pool.execute(`
+                INSERT INTO cat_product_presentations
+                (
+                    id_product,
+                    id_flavor,
+                    id_unit,
+                    quantity,
+                    sku,
+                    barcode,
+                    price,
+                    image_path,
+                    created_by
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `, [
+                data.id_product,
+                data.id_flavor || null,
+                data.id_unit,
+                data.quantity,
+                sku,
+                data.barcode || null,
+                data.price,
+                data.image_url || null,
+                data.created_by || null
+            ]);
+
+            await connection.commit();
+
+            return await this.getPresentation(result.insertId);
+
+        } catch (error) {
+
+            await connection.rollback();
+
+            throw error;
+
+        } finally {
+
+            connection.release();
+        }
     }
 
 
@@ -53,10 +106,9 @@ class PresentationModel {
                 id_flavor = ?,
                 id_unit = ?,
                 quantity = ?,
-                sku = ?,
                 barcode = ?,
                 price = ?,
-                image_url = ?,
+                image_path = ?,
                 updated_by = ?
             WHERE id_presentation = ?
         `, [
@@ -64,7 +116,6 @@ class PresentationModel {
             data.id_flavor || null,
             data.id_unit,
             data.quantity,
-            data.sku.trim(),
             data.barcode || null,
             data.price,
             data.image_url || null,
@@ -132,7 +183,7 @@ class PresentationModel {
                 p.sku,
                 p.barcode,
                 p.price,
-                p.image_url,
+                p.image_path,
 
                 p.status,
 
@@ -184,7 +235,7 @@ class PresentationModel {
                 p.sku,
                 p.barcode,
                 p.price,
-                p.image_url,
+                p.image_path,
 
                 p.status,
 
@@ -281,7 +332,7 @@ class PresentationModel {
                 p.sku,
                 p.barcode,
                 p.price,
-                p.image_url,
+                p.image_path,
 
                 p.status
 

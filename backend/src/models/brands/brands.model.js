@@ -187,7 +187,7 @@ class BrandModel {
                 c.id_category,
                 c.name
             FROM cat_brand_category bc
-            INNER JOIN cat_product_category c
+            INNER JOIN cat_product_categories c
                 ON c.id_category = bc.id_category
             WHERE bc.id_brand = ?
             ORDER BY c.name

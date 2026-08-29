@@ -229,9 +229,25 @@ class BrandModel {
                 b.description,
                 b.status,
                 b.created_at,
-                b.updated_at
+                b.updated_at,
+                GROUP_CONCAT(
+                    DISTINCT c.name
+                    ORDER BY c.name
+                    SEPARATOR ', '
+                ) AS categories
             FROM cat_brands b
-                WHERE b.status != 2
+            LEFT JOIN cat_brand_category bc
+                ON bc.id_brand = b.id_brand
+            LEFT JOIN cat_product_categories c
+                ON c.id_category = bc.id_category
+            WHERE b.status != 2
+            GROUP BY
+                b.id_brand,
+                b.name,
+                b.description,
+                b.status,
+                b.created_at,
+                b.updated_at
             ORDER BY b.name
         `);
 

@@ -167,19 +167,14 @@ class PresentationModel {
         const [rows] = await pool.execute(`
             SELECT
                 p.id_presentation,
-
                 p.id_product,
                 pr.name AS product_name,
-
                 p.id_flavor,
                 f.name AS flavor_name,
-
                 p.id_unit,
                 u.name AS unit_name,
                 u.abbreviation AS unit_abbreviation,
-
                 p.quantity,
-
                 p.sku,
                 p.barcode,
                 p.price,
@@ -235,8 +230,7 @@ class PresentationModel {
                 p.sku,
                 p.barcode,
                 p.price,
-                p.image_path,
-
+                CONCAT('https://storage.googleapis.com/athletic-gym/',  p.image_path) AS image_path,
                 p.status,
 
                 p.created_at,
@@ -279,7 +273,7 @@ class PresentationModel {
                 p.id_unit,
                 u.name AS unit_name,
                 u.abbreviation AS unit_abbreviation,
-
+                CONCAT('https://storage.googleapis.com/athletic-gym/',  p.image_path) AS image_path,
                 p.quantity,
 
                 p.sku,

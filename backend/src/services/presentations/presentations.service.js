@@ -2,6 +2,9 @@ const PresentationModel = require(
     '../../models/presentations/presentations.model'
 );
 
+const { getBucket } =
+    require("../../config/gcp/storage");
+    
 const { v4: uuidv4 } =
     require("uuid");
 

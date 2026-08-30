@@ -21,6 +21,7 @@ router.use('/flavors', require('./flavors/flavors.routes'));
 router.use('/products', require('./products/products.routes'));
 router.use('/presentations', require('./presentations/presentations.routes'));
 router.use('/units', require('./catalogs/units.routes'));
+router.use('/locations', require('./locations/locations.routes'));
 
 
 module.exports = router;
